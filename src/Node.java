@@ -121,7 +121,38 @@ public class Node
         // 2. Increment the convergence measure numUpdates variable once
 
         // WRITE YOUR CODE HERE
+        boolean changed = false;
+        final int INF = 999;
 
+        // If the neighbor isn't directly reachable, ignore this update.
+        if (cost[neighbor_id] >= INF) {
+            return;
+        }
+
+        for (int dest = 0; dest < DVSimulator.NUMNODES; dest++) {
+            if (dest == id) {
+                myDV[dest] = 0;
+                bestPath[dest] = id;
+                continue;
+            }
+
+            int neighborToDest = neighborDV[neighbor_id][dest];
+            if (neighborToDest >= INF) {
+                continue;
+            }
+
+            int candidate = cost[neighbor_id] + neighborToDest;
+            if (candidate < myDV[dest]) {
+                myDV[dest] = candidate;
+                bestPath[dest] = neighbor_id;
+                changed = true;
+            }
+        }
+
+        if (changed) {
+            numUpdates++;
+            notifyNeighbors();
+        }
     }
 
     public void buildFwdTable() {
